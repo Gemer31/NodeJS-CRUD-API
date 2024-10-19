@@ -3,11 +3,14 @@ import { createServer, IncomingMessage, ServerResponse } from 'http';
 import { createUser, deleteUser, getAllUsers, getUserById, updateUser } from './user.controller';
 import { Messages, MethodTypes } from './enums';
 import { responseErrorData, setResponse } from './helpers';
+import dotenv from 'dotenv';
 
-const RELATIVE_API_URL: string = '/api/users';
+dotenv.config();
+
+export const RELATIVE_API_URL: string = '/api/users';
 const PORT: number = process.env.PORT ? Number(process.env.PORT) : 3001;
 
-async function requestHandler(req: IncomingMessage, res: ServerResponse) {
+export async function requestHandler(req: IncomingMessage, res: ServerResponse) {
   try {
     if (req.url.startsWith(RELATIVE_API_URL)) {
       let userId = req.url.replace(RELATIVE_API_URL, '');
@@ -34,6 +37,11 @@ async function requestHandler(req: IncomingMessage, res: ServerResponse) {
           break;
         }
         default: {
+          setResponse(
+            res,
+            responseErrorData(Messages.METHOD_IS_NOT_FOUND),
+            404,
+          );
           break;
         }
       }
@@ -45,15 +53,12 @@ async function requestHandler(req: IncomingMessage, res: ServerResponse) {
       );
     }
   } catch (e) {
-    setResponse(
-      res,
-      responseErrorData(Messages.API_IS_NOT_FOUND),
-      404,
-    );
+    console.error(e);
+    setResponse(res, responseErrorData(Messages.INTERNAL_SERVER_ERROR), 500);
   }
 }
 
-const server = createServer(requestHandler);
+export const server = createServer(requestHandler);
 
 server.listen(
   PORT,
