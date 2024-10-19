@@ -23,7 +23,7 @@ export function getUserById(res: ServerResponse, userId: string): void {
   if (!user) {
     return setResponse(
       res,
-      responseErrorData(Messages.INVALID_USER_ID),
+      responseErrorData(Messages.USER_NOT_FOUND),
       404,
     );
   }

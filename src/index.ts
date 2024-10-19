@@ -10,7 +10,11 @@ const PORT: number = process.env.PORT ? Number(process.env.PORT) : 3001;
 async function requestHandler(req: IncomingMessage, res: ServerResponse) {
   try {
     if (req.url.startsWith(RELATIVE_API_URL)) {
-      const userId = req.method.replace(RELATIVE_API_URL, '');
+      let userId = req.url.replace(RELATIVE_API_URL, '');
+
+      if (userId.startsWith('/')) {
+        userId = userId.replace('/', '');
+      }
 
       switch (req.method) {
         case MethodTypes.GET: {
@@ -34,7 +38,6 @@ async function requestHandler(req: IncomingMessage, res: ServerResponse) {
         }
       }
     } else {
-      console.log(req.method);
       setResponse(
         res,
         responseErrorData(Messages.API_IS_NOT_FOUND),
