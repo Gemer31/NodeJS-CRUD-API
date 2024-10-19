@@ -17,6 +17,7 @@
   },
   "homepage": "https://github.com/Gemer31/NodeJS-CRUD-API#readme",
   "devDependencies": {
+    "@types/uuid": "^10.0.0",
     "ts-node-dev": "^2.0.0",
     "typescript": "^5.6.3",
     "webpack": "^5.95.0"
