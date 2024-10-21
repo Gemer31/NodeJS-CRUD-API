@@ -1,9 +1,11 @@
 import supertest from 'supertest';
-import { RELATIVE_API_URL, server } from '../src/server';
 import { Messages } from '../src/enums';
 import { IUserInput } from '../src/models';
+import { RELATIVE_API_URL } from '../src/constants';
+import { userServer } from '../src';
 
-const request = supertest(server);
+const request = supertest(userServer.server);
+
 const mockUser: IUserInput = {
   username: 'John Smith',
   age: 35,
@@ -15,13 +17,13 @@ const updatedUser = {
 };
 let userId: string;
 
-describe('Server users API', (): void => {
+describe('UserServer users API', (): void => {
   beforeAll(() => {
-    server.close();
-    server.listen(4000);
+    userServer.stop();
+    userServer.start();
   });
 
-  afterAll(() => server.close());
+  afterAll(() => userServer.stop());
 
 
   test('Get all users. Should return an empty array', async () => {

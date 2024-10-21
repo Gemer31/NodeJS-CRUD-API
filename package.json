@@ -2,10 +2,11 @@
   "name": "nodejs-crud-api",
   "version": "1.0.0",
   "description": "",
-  "main": "src/server.ts",
+  "main": "src/user.server.ts",
   "scripts": {
-    "start:dev": "ts-node-dev src/server.ts",
-    "start:prod": "npm run build && node dist/server.js",
+    "start:dev": "ts-node-dev src/index.ts",
+    "start:prod": "npm run build && node dist/index.js",
+    "start:multi": "npm run build && node dist/cluster.js",
     "build": "tsc",
     "test": "jest"
   },

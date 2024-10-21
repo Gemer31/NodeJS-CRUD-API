@@ -1,9 +1,20 @@
 import { IUserInput } from './models';
 import { IncomingMessage, ServerResponse } from 'node:http';
 import { Messages } from './enums';
+import { RELATIVE_API_URL } from './constants';
 
 export function isUserDataValid({username, hobbies, age}: IUserInput): boolean {
   return !username || !age || !Array.isArray(hobbies);
+}
+
+export function getUserIdFromUrl(url: string) {
+  let id = url.replace(RELATIVE_API_URL, '');
+
+  if (id.startsWith('/')) {
+    id = id.replace('/', '');
+  }
+
+  return id;
 }
 
 export function setResponse(res: ServerResponse, data: unknown, status: number) {

@@ -2,7 +2,7 @@
   "compilerOptions": {
     "outDir": "./dist",
     "rootDir": "./src",
-    "target": "es2016",
+    "target": "es6",
     "module": "commonjs",
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
@@ -11,12 +11,10 @@
     "strictNullChecks": false,
     "skipLibCheck": true
   },
-  "files": [
-    "src/server.ts"
-  ],
+  "include": ["src/**/*"],
   "exclude": [
     "node_modules",
-    "test",
+    "tests",
     "dist",
     "**/*spec.ts"
   ]
