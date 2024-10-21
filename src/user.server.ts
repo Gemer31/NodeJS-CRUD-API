@@ -12,15 +12,17 @@ export class UserServer {
   }
 
   constructor(private _port: number, private _userController: UserController) {
+    this._server = createServer(this.requestHandler);
   }
 
   public start(callback?: () => void) {
-    this._server = createServer(this.requestHandler);
-    this._server.listen(this._port, callback || (() => console.log(`Server is running on PORT: ${this._port}`)));
+    if (!this._server?.listening) {
+      this._server.listen(this._port, callback || (() => console.log(`Server is running on PORT: ${this._port}`)));
+    }
   }
 
   public stop() {
-    this._server.close(() => {
+    this._server?.close(() => {
       console.log(`Server with port ${this._port} stopped`);
     });
   }

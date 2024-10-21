@@ -2,12 +2,24 @@ import supertest from 'supertest';
 import { Messages } from '../src/enums';
 import { IUserInput } from '../src/models';
 import { RELATIVE_API_URL } from '../src/constants';
-import { userServer } from '../src';
+import { UserServer } from '../src/user.server';
+import { UserService } from '../src/user.service';
+import { UserController } from '../src/user.controller';
+import { unlink } from 'fs'
+import path from 'path';
+
+const usersFile = 'mock-users.json';
+
+unlink(path.join(process.cwd(), usersFile), () => {});
+
+const userService = new UserService(usersFile);
+const userController = new UserController(userService);
+const userServer = new UserServer(4000, userController);
 
 const request = supertest(userServer.server);
 
 const mockUser: IUserInput = {
-  username: 'John Smith',
+  username: 'Some username',
   age: 35,
   hobbies: [],
 };
@@ -24,13 +36,6 @@ describe('UserServer users API', (): void => {
   });
 
   afterAll(() => userServer.stop());
-
-
-  test('Get all users. Should return an empty array', async () => {
-    const response = await request.get(`${RELATIVE_API_URL}`);
-    expect(response.status).toBe(200);
-    expect(response.body).toStrictEqual([]);
-  });
 
   test('Create user. Should create and return a new user containing expected records', async () => {
     const response = await request

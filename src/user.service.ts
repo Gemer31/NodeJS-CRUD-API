@@ -6,8 +6,8 @@ import { readFile, writeFile } from 'fs/promises';
 export class UserService {
   private _usersFilePath: string;
 
-  constructor() {
-    this._usersFilePath = path.join(process.cwd(), "users.json");
+  constructor(usersFilePath?: string) {
+    this._usersFilePath = path.join(process.cwd(), usersFilePath || "users.json");
   }
 
   private async readData(): Promise<IUser[]> {

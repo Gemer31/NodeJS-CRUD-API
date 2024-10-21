@@ -7,31 +7,27 @@ import { UserController } from './user.controller';
 import { UserService } from './user.service';
 
 const PORT: number = process.env.PORT ? Number(process.env.PORT) : 4000;
-const cpus = os.cpus().length;
+const cpus: number = os.cpus().length;
 
-const createProxyRequest = (
-  request: http.IncomingMessage,
-  response: http.ServerResponse,
-  port: number,
-) => {
-  const proxyReq = http.request(
+const delegateRequest = (request: http.IncomingMessage, response: http.ServerResponse, port: number) => {
+  const delegateReq = http.request(
     {
-      hostname: 'localhost',
       port,
+      hostname: 'localhost',
       path: request.url,
       method: request.method,
       headers: request.headers,
     },
-    (proxyRes) => {
-      response.writeHead(proxyRes.statusCode!, proxyRes.headers);
-      proxyRes.pipe(response);
+    (delegateRes) => {
+      response.writeHead(delegateRes.statusCode, delegateRes.headers);
+      delegateRes.pipe(response);
     },
   );
-  request.pipe(proxyReq);
+  request.pipe(delegateReq);
 };
 
 if (cluster.isPrimary) {
-  console.log(`Master process started. Number of CPU cores: ${cpus}`);
+  console.log(`Number of CPU cores: ${cpus}`);
 
   for (let i = 0; i < cpus; i++) {
     cluster.fork({PORT: PORT + i + 1});
@@ -44,23 +40,20 @@ if (cluster.isPrimary) {
     }
   });
 
-  let currentWorkerPort = PORT + 1;
+  let workerPort = PORT + 1;
   http
     .createServer((req, res) => {
-      createProxyRequest(req, res, currentWorkerPort);
-      currentWorkerPort =
-        currentWorkerPort < PORT + cpus ? currentWorkerPort + 1 : PORT + 1;
+      delegateRequest(req, res, workerPort);
+      workerPort = (workerPort < PORT + cpus) ? (workerPort + 1) : (PORT + 1);
     })
     .listen(PORT, () => {
       console.log(`Main server listening on port ${PORT}`);
     });
 } else {
-  const workerPort = Number(process.env.PORT);
+  const workerPort: number = Number(process.env.PORT);
   const server = new UserServer(workerPort, new UserController(new UserService()));
 
   server.start(() => {
-    console.log(
-      `Worker ${cluster.worker!.id} started on port ${workerPort}`,
-    );
+    console.log(`Worker ${cluster.worker!.id} started on port ${workerPort}`);
   });
 }
